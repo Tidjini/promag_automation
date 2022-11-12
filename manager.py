@@ -43,7 +43,7 @@ def perform_actions(ref):
         - Start Date (DATE_DEBUT)
         - End  Date (DATE_FIN)
         - Product Reference (REFRENCE)
-        - click on Search Button with : assets/recherche.png
+    then click on Search Button with : assets/recherche.png
     """
 
     print("{}:{}".format(ref, datetime.now()))
@@ -59,16 +59,8 @@ def perform_actions(ref):
 
 
 def main():
-    while True:
-        is_running = software_is_running()
-        if not is_running:
-            print(
-                "*" * 10,
-                "game over ;) {} leave Procom now".format(datetime.now()),
-                "*" * 10,
-            )
-            break
-
+    is_running = software_is_running()
+    while is_running:
         print("*" * 10, "iteration: {}".format(datetime.now()), "*" * 10)
         try:
             for ref in PRODUCTS:
@@ -85,6 +77,7 @@ def main():
             break
         # wait for refresh time to re-execute, automation, each 2 minutes
         time.sleep(REFRESH_TIME)
+        is_running = software_is_running()
 
 
 if __name__ == "__main__":
