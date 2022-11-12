@@ -78,6 +78,12 @@ def main():
         # wait for refresh time to re-execute, automation, each 2 minutes
         time.sleep(REFRESH_TIME)
         is_running = software_is_running()
+    else:
+        print(
+            "*" * 10,
+            "game over ;) {} leave Procom now".format(datetime.now()),
+            "*" * 10,
+        )
 
 
 if __name__ == "__main__":
