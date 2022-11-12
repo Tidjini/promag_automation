@@ -1,4 +1,5 @@
 x_check, y_check = 516, 57
+# track some spesific product reference
 # PRODUCTS = ("BR", "0/1", "4/6", "E65", "Kero", "BRP")
 PRODUCTS = ("BR", "0/1", "4/6")
 DATE_DEBUT_POSITION = 10, 95

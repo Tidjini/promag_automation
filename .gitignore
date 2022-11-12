@@ -1,4 +1,3 @@
 output/*
 collector.py
-manager.py
 service.py
