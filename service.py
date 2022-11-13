@@ -8,7 +8,7 @@ API = os.environ.get("PROCOM_API", "https://procom-tracker.herokuapp.com/api/")
 def update(product):
     """Update in remote services
 
-    references must be lower case and no slashes
+    references must be lower case with no slashes
     """
     reference = formelize(product["reference"])
 
