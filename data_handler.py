@@ -48,38 +48,44 @@ def push_data(ref: str, designation: str, qte: float, mtn: float) -> None:
     service.update(product)
 
 
-# for _ref, designation in PRODUCTS:
-#     ref = formalize(_ref)
-#     qte = cv2.imread(f"output/{ref}.qte.png")
-#     h, w = qte.shape[:2]
-#     qte = cv2.resize(qte, (w * 3, h * 3))
+def is_number(word):
 
-#     mtn = cv2.imread(f"output/{ref}.mtn.png")
-#     h, w = mtn.shape[:2]
-#     mtn = cv2.resize(mtn, (w * 3, h * 3))
+    for char in word:
+        if not char.isdigit() and not char == ".":
+            return False
 
-#     str_qte = pytesseract.image_to_string(qte)
-#     str_mtn = pytesseract.image_to_string(mtn)
-#     str_qte = str_qte.strip().replace(" ", "").replace(",", ".")
-#     str_mtn = str_mtn.strip().replace(" ", "").replace(",", ".")
+    return True
 
-#     quantite = 0.0
-#     montant = 0.0
-#     try:
-#         quantite = float(str_qte)
-#     except Exception:
-#         pass
 
-#     try:
-#         montant = float(str_mtn)
-#     except Exception:
-#         pass
+def convert(picture_path, zoom=4):
+    data = None
+    while not data or not is_number(data):
+        # Grayscale, Gaussian blur, Otsu's threshold
+        image = cv2.imread(picture_path)
+        h, w = image.shape[:2]
+        image = cv2.resize(image, (w * zoom, h * zoom))
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        blur = cv2.GaussianBlur(gray, (3, 3), 0)
+        thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
 
-#     product = {
-#         "qte_stock": quantite,
-#         "value": montant,
-#         "reference": ref,
-#         "designation": designation,
-#     }
+        # Morph open to remove noise and invert image
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+        opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel, iterations=1)
+        invert = 255 - opening
 
-#     update(product)
+        # Perform text extraction
+        # data = pytesseract.image_to_string(
+        #     invert, lang='eng', config='--psm 6 or 7') no 5 / 8 / 9 / 11 / 12 /13
+        data = pytesseract.image_to_string(
+            invert, config="--psm 7 -c tessedit_char_whitelist=0123456789.,"
+        )
+        # print('raw data', data)
+
+        data = data.strip().replace(",", ".").replace(" ", "").replace("_", "")
+        print(data, "zoom: ", zoom)
+        # cv2.imshow('invert', invert)
+        # cv2.waitKey()
+        if zoom == 10:
+            data = "0"
+        zoom += 1
+    return data
