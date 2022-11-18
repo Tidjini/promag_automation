@@ -13,3 +13,10 @@ def formalize(ref):
 
 def unformalize(ref):
     return ref.replace("_", "/").upper()
+
+
+def raise_requests_exception(response):
+
+    error_message = "Save Exception, something went wrong in your remote server"
+    print(error_message, f"caused by: {response.json()}")
+    raise Exception(error_message, f"caused by: {response.json()}")
