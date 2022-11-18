@@ -1,8 +1,8 @@
 import time
-from _typeshed import Self
 from typing import Any
 from abc import ABC, abstractmethod
 
+# check for from _typeshed import Self
 # third-party
 import pyautogui
 
@@ -87,7 +87,7 @@ class Window(ABC):
             raise TypeError("click an asset exception due to:", e)
         self.click((x, y))
 
-    def __enter__(self) -> Self:
+    def __enter__(self):
         """use 'with' keyword to perform actions on this object"""
 
         if self.is_running:
@@ -118,3 +118,17 @@ class Window(ABC):
             self.click_asset(self.close_asset)
         except TypeError:
             pass
+
+
+class MainWindow(Window):
+    _name = "MAIN"
+
+    def __init__(self, check_asset: str, assume_location: tuple) -> None:
+        super().__init__(check_asset=check_asset, assume_location=assume_location)
+
+    def perform_actions(self, *args, **kwargs) -> None:
+        pass
+
+    @property
+    def name(self) -> str:
+        return self._name
