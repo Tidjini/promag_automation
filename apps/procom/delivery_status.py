@@ -38,37 +38,6 @@ class DeliveryStatus(Window):
 
         time.sleep(wait_time)
 
-    def __enter__(self) -> Self:
-        """use with keyword to perform actions in this object"""
-        if self.is_running:
-            return self
-        try:
-            # click status button in main window menu
-            self.click_asset(self.status)
-            time.sleep(1)
-            # click in delivery status in displayed menu
-            self.click_asset(self.delivery_status)
-            time.sleep(2)
-            # after that delivery status is opened
-            self.is_running = True
-        except TypeError as e:
-            self.is_running = False
-
-        return self
-
-    def __exit__(self) -> None:
-        """exit the with keyword with trying to close the window"""
-
-        if not self.is_running:
-            return
-
-        self.is_running = False
-        try:
-            self.click_asset(self.close_asset)
-            time.sleep(1)
-        except TypeError as e:
-            pass
-
 
 # def checker(window: Window):
 #     """Run this in seprate thread"""
