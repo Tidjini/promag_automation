@@ -4,13 +4,13 @@ BOTTOM = 1000, 1050
 
 
 class Window:
-
-    def __init__(self, name: str, asset: str, location: tuple) -> None:
-
+    def __init__(self, name: str, asset: str, location: tuple, **kwargs) -> None:
         self.name = name
         self.asset = asset
         self.location = location
         self._is_running = False
+        # set other properties from kwargs
+        self.__dict__.update(kwargs)
 
     @property
     def is_running(self):
@@ -20,13 +20,12 @@ class Window:
     def is_running(self, value):
         self._is_running = value
 
-    def click(self, position):
-        '''to lose window focus, capture become more gray'''
-        pyautogui.moveTo(*position)
-        pyautogui.click()
+    def click(self, location):
+        """Generic click function by position"""
+        pyautogui.click(*location)
 
     def deactivate(self):
-        '''to lose window focus, capture become more gray'''
+        """to lose window focus, capture become more gray"""
         self.click(*BOTTOM)
 
     def write(self, location: tuple, text: str):
@@ -34,10 +33,10 @@ class Window:
         pyautogui.doubleClick(*location)
         pyautogui.write(text)
 
-    def checking(self, perform_deactive):
-        '''checking if window is running'''
+    def checking(self, deactive=False):
+        """checking if window is running"""
 
-        if perform_deactive:
+        if deactive:
             self.deactivate()
 
         try:
@@ -49,38 +48,10 @@ class Window:
         except (FileNotFoundError, TypeError):
             self.is_running = False
 
-
-class DateIntervalWindow(Window):
-
-    def __init__(self, name: str, asset: str, location: tuple, start_position: tuple, end_position: tuple):
-        super().__init__(name, asset, location)
-        self.start_position = start_position
-        self.end_position = end_position
-
-
-class ReferenceWindow(Window):
-
-    def __init__(self, name: str, asset: str, location: tuple, reference_position: tuple):
-        super().__init__(name, asset, location)
-        self.reference_position = reference_position
-
-
-class SearchWindow(Window):
-    def __init__(self, name: str, asset: str, location: tuple, search: str) -> None:
-        super().__init__(name, asset, location)
-        self.search = search
-
     def navigate_to_search(self) -> tuple:
-        x, y = pyautogui.locateCenterOnScreen(self.search)
-        pyautogui.moveTo(x, y)
-        return x, y
-
-
-class EtatLivraison(DateIntervalWindow, ReferenceWindow, SearchWindow):
-
-    def __init__(self, name: str, asset: str, location: tuple, start_position: tuple, end_position: tuple, reference_position: tuple, search: st):
-        DateIntervalWindow.__init__(
-            self, name, asset, location, start_position, end_position)
-        ReferenceWindow.__init__(
-            self, name, asset, location, reference_position)
-        SearchWindow.__init__(self, name, asset, location, search)
+        try:
+            x, y = pyautogui.locateCenterOnScreen(self.search)
+            pyautogui.moveTo(x, y)
+            return x, y
+        except (FileNotFoundError, TypeError):
+            return None
