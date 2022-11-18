@@ -1,12 +1,12 @@
+from abc import ABC, abstractmethod
 import pyautogui
 
 BOTTOM = 1000, 1050
 
 
-class Window:
-    def __init__(self, name: str, asset: str, location: tuple, **kwargs) -> None:
+class Window(ABC):
+    def __init__(self, name: str, location: tuple, **kwargs) -> None:
         self.name = name
-        self.asset = asset
         self.location = location
         self._is_running = False
         # set other properties from kwargs
@@ -19,6 +19,18 @@ class Window:
     @is_running.setter
     def is_running(self, value):
         self._is_running = value
+
+    @abstractmethod
+    def perform_actions(self, *args, **kwargs):
+        pass
+
+    @abstractmethod
+    def open(self, *args, **kwargs):
+        pass
+
+    @abstractmethod
+    def close(self, *args, **kwargs):
+        pass
 
     def click(self, location):
         """Generic click function by position"""
@@ -33,11 +45,8 @@ class Window:
         pyautogui.doubleClick(*location)
         pyautogui.write(text)
 
-    def checking(self, deactive=False):
+    def checking(self):
         """checking if window is running"""
-
-        if deactive:
-            self.deactivate()
 
         try:
             # if the asset is in same location with our location, then window is running
@@ -48,10 +57,23 @@ class Window:
         except (FileNotFoundError, TypeError):
             self.is_running = False
 
-    def navigate_to_search(self) -> tuple:
+    def double_check(self):
+        self.checking(self.asset)
+        if self.is_running:
+            return
+        self.checking(self.active_asset)
+
+    def navigate_to(self, asset):
         try:
-            x, y = pyautogui.locateCenterOnScreen(self.search)
+            x, y = pyautogui.locateCenterOnScreen(asset)
             pyautogui.moveTo(x, y)
             return x, y
         except (FileNotFoundError, TypeError):
             return None
+
+    def click_asset(self, asset: str) -> None:
+        try:
+            x, y = self.navigate_to(asset)
+        except TypeError as e:
+            raise TypeError("click an asset exception due to:", e)
+        self.click((x, y))
