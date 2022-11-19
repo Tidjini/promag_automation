@@ -1,5 +1,4 @@
 import time
-from random import randrange
 from threading import Thread
 from pathlib import Path
 
@@ -8,7 +7,8 @@ from procom.window import Window, MainWindow
 from procom.procom_io import ProcomIO
 from procom.procom_image_converter import ProcomImageConverter
 from procom.constants import *
-from .service import ProductServiceAPI
+from service import ProductServiceAPI
+
 
 root = Path(__file__).parent.parent
 logo = root / "assets/procom_logo.png"

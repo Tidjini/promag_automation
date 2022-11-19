@@ -5,6 +5,8 @@ from procom.helpers import formalize, raise_requests_exception
 
 API = os.environ.get("PROCOM_API", "https://procom-tracker.herokuapp.com/api")
 
+# todo make sure to set function to correct url use regex clean // except http://
+
 
 class ServiceAPI:
     """Service Api, push data to remote server"""
@@ -32,13 +34,15 @@ class ServiceAPI:
 
         return True if created else False, along with the response object
         """
+
         try:
             response = requests.put(
-                f"{url}/{reference}/", data=data, files=files, timeout=timeout
+                f"{url}{reference}/", data=data, files=files, timeout=timeout
             )
-            if response == 200:
+            if response.status_code == 200:
                 return True, response
-        except RequestException as e:
+
+        except Exception as e:
             print("PUT Exception, due to:", e)
 
         return False, response
@@ -69,7 +73,6 @@ class ServiceAPI:
         if saved:
             return response
 
-        # if not saved post just data
         saved, response = ServiceAPI.post(url=url_path, data=data, timeout=timeout)
         if saved:
             if files:
@@ -112,6 +115,8 @@ class ProductServiceAPI:
     def prepare_files(files: dict, path: str = "output"):
         """Prepare a list of files"""
         result = {}
+        if not files:
+            return None
         for attribute, filename in files.items():
             file = ProductServiceAPI.prepare_file(filename, path)
             if file is None:
