@@ -6,6 +6,7 @@ from pathlib import Path
 #  application
 from procom.window import Window, MainWindow
 from procom.procom_io import ProcomIO
+from procom.procom_image_converter import ProcomImageConverter
 from procom.constants import *
 
 root = Path(__file__).parent.parent
@@ -34,7 +35,8 @@ def actions(window: Window):
         )
 
         ProcomIO.save(window, "1/0", "qte", (94, 760, 78, 15))
-
+        data = ProcomImageConverter.convert("../output/1_0.qte.png")
+        print("1/0[qte]-->", data)
         time.sleep(10)
 
 

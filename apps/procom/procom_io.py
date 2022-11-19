@@ -8,7 +8,7 @@ from .helpers import formalize
 class ProcomIO:
     """PROCOM IO
 
-    handle  output / input images
+    handle  output / input
     """
 
     @staticmethod
