@@ -8,6 +8,7 @@ from procom.window import Window, MainWindow
 from procom.procom_io import ProcomIO
 from procom.procom_image_converter import ProcomImageConverter
 from procom.constants import *
+from .service import ProductServiceAPI
 
 root = Path(__file__).parent.parent
 logo = root / "assets/procom_logo.png"
@@ -41,8 +42,22 @@ def actions(window: Window):
         )
         if result is None:
             print("1/0[qte] -> NONE")
-        else:
-            print("1/0[qte]-->data:{}, zoom:{}".format(*result))
+            continue
+        data, zoom = result
+        print("1/0[qte]-->data:{}, zoom:{}".format(data, zoom))
+
+        try:
+            result = float(data)
+        except:
+            result = 0.0
+
+        product = {
+            "qte_stock": result,
+            "value": 0.0,
+            "reference": "1_0",
+            "designation": "designation",
+        }
+        ProductServiceAPI.save("products", product, filenames=None)
         time.sleep(10)
 
 

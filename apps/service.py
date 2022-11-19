@@ -1,9 +1,9 @@
 import os
 import requests
 from requests.exceptions import RequestException
-from helpers import formalize, raise_requests_exception
+from procom.helpers import formalize, raise_requests_exception
 
-API = os.environ.get("PROCOM_API", None)
+API = os.environ.get("PROCOM_API", "https://procom-tracker.herokuapp.com/api")
 
 
 class ServiceAPI:
