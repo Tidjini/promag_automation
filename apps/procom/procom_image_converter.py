@@ -6,7 +6,12 @@ import pytesseract
 from .helpers import has_number_or_dot
 
 # static configuration
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+try:
+    pytesseract.pytesseract.tesseract_cmd = (
+        r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+    )
+except:
+    pass
 
 
 class ProcomImageConverter:
@@ -26,7 +31,8 @@ class ProcomImageConverter:
     @staticmethod
     def apply_zoom(image, zoom=4):
         h, w = image.shape[:2]
-        return cv2.resize(image, (w * zoom, h * zoom))
+        image = cv2.resize(image, (w * zoom, h * zoom))
+        return image
 
     @staticmethod
     def threshold(image):
@@ -37,7 +43,8 @@ class ProcomImageConverter:
         # Grayscale, Gaussian blur, Otsu's threshold
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         blur = cv2.GaussianBlur(gray, (3, 3), 0)
-        return cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+        thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+        return thresh
 
     @staticmethod
     def remove_noise(image):
@@ -67,9 +74,9 @@ class ProcomImageConverter:
 
     @staticmethod
     def convert(path, zoom=4, zoom_max=10):
-        image = ProcomImageConverter.get_image(path, zoom)
+        image = ProcomImageConverter.get_image(path)
         if image is None:
-            return
+            return None
         data = None
         while not has_number_or_dot(data):
             image = ProcomImageConverter.apply_zoom(image, zoom)
@@ -83,7 +90,7 @@ class ProcomImageConverter:
             # increment zoom on step
             zoom += 1
 
-        return data
+        return data, zoom
 
 
 # ORIGINAL

@@ -35,8 +35,14 @@ def actions(window: Window):
         )
 
         ProcomIO.save(window, "1/0", "qte", (94, 760, 78, 15))
-        data = ProcomImageConverter.convert("../output/1_0.qte.png")
-        print("1/0[qte]-->", data)
+        # try some stupid
+        result = ProcomImageConverter.convert(
+            "../output/1_0.qte.png", zoom=1, zoom_max=2
+        )
+        if result is None:
+            print("1/0[qte] -> NONE")
+        else:
+            print("1/0[qte]-->data:{}, zoom:{}".format(*result))
         time.sleep(10)
 
 
