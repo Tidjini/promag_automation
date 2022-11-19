@@ -36,6 +36,7 @@ class DeliveryStatus(Window):
             # todo think about make self.is_running = False in here
             return
 
+        # wait untill get data
         time.sleep(wait_time)
 
 

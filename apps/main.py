@@ -5,7 +5,8 @@ from pathlib import Path
 
 #  application
 from procom.window import Window, MainWindow
-from constants import *
+from procom.procom_io import ProcomIO
+from procom.constants import *
 
 root = Path(__file__).parent.parent
 logo = root / "assets/procom_logo.png"
@@ -31,6 +32,8 @@ def actions(window: Window):
         window.perform_actions() if window.is_running else print(
             f"{window.name} is not running, go next iteration"
         )
+
+        ProcomIO.save(window, "1/0", "qte", (94, 760, 78, 15))
 
         time.sleep(10)
 
