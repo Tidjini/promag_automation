@@ -127,7 +127,7 @@ class MainWindow(Window):
         super().__init__(check_asset=check_asset, assume_location=assume_location)
 
     def perform_actions(self, *args, **kwargs) -> None:
-        pass
+        print(f"{self.name} perform actions")
 
     @property
     def name(self) -> str:
