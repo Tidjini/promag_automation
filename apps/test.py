@@ -26,6 +26,6 @@ etat = headers/'journal_encaissement.png'
 # now = datetime.now()
 # print(f'{region}')
 
-path_qte = output / 'br.qte.png'
-data, zoom = ProcomImageConverter.convert(path=str(path_qte))
+pt = headers / 'enc.png'
+data, zoom = ProcomImageConverter.convert(path=str(pt))
 print(data, zoom)
