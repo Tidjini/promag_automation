@@ -6,12 +6,9 @@ import pytesseract
 from .helpers import has_number_or_dot
 
 # static configuration
-try:
-    pytesseract.pytesseract.tesseract_cmd = (
-        r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-    )
-except:
-    pass
+pytesseract.pytesseract.tesseract_cmd = (
+    r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+)
 
 
 class ProcomImageConverter:
@@ -43,11 +40,13 @@ class ProcomImageConverter:
         # Grayscale, Gaussian blur, Otsu's threshold
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         blur = cv2.GaussianBlur(gray, (3, 3), 0)
-        thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
+        thresh = cv2.threshold(
+            blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
         return thresh
 
     @staticmethod
     def remove_noise(image):
+
         # Morph open to remove noise and invert image
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
         opening = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel, iterations=1)
@@ -62,9 +61,10 @@ class ProcomImageConverter:
         """
         try:
             data = pytesseract.image_to_string(
-                image, config="--psm 7 -c tessedit_char_whitelist=0123456789.,"
+                image, config="--psm 6 -c tessedit_char_whitelist=0123456789.,"
             )
-
+            # cv2.imshow("image", image)
+            # cv2.waitKey()
             # return more clean data, avoid spaces and comma to dot
             return data.strip().replace(",", ".").replace(" ", "").replace("_", "")
         except Exception as ex:
@@ -73,13 +73,13 @@ class ProcomImageConverter:
         return None
 
     @staticmethod
-    def convert(path, zoom=4, zoom_max=10):
-        image = ProcomImageConverter.get_image(path)
-        if image is None:
+    def convert(path, zoom=4, zoom_max=7):
+        orignal = ProcomImageConverter.get_image(path)
+        if orignal is None:
             return None
         data = None
         while not has_number_or_dot(data):
-            image = ProcomImageConverter.apply_zoom(image, zoom)
+            image = ProcomImageConverter.apply_zoom(orignal, zoom)
             thresh = ProcomImageConverter.threshold(image)
             invert = ProcomImageConverter.remove_noise(thresh)
             data = ProcomImageConverter.get_data(invert)
@@ -90,7 +90,9 @@ class ProcomImageConverter:
             # increment zoom on step
             zoom += 1
 
-        return data, zoom
+        if data is None or data == '':
+            data = '0'
+        return data, zoom - 1
 
 
 # ORIGINAL

@@ -5,6 +5,10 @@ from datetime import datetime
 # application
 from .window import Window
 from .procom_io import ProcomIO
+from .procom_image_converter import ProcomImageConverter
+from .service import ProductServiceAPI
+
+from .helpers import formalize
 from .constants import *
 
 
@@ -41,6 +45,32 @@ class DeliveryStatus(Window):
         except:
             pass
 
+    def save_output(self, product):
+        ProcomIO.save(self, product[0], "qte", QTE_REGION, path=str(output))
+        ProcomIO.save(self, product[0], "mtn", MTN_REGION, path=str(output))
+
+    def convert_data(self, product):
+        ref = formalize(product[0])
+        path_qte = output / f'{ref}.qte.png'
+        path_mtn = output / f'{ref}.mtn.png'
+        qte, _ = ProcomImageConverter.convert(path=str(path_qte))
+        mtn, _ = ProcomImageConverter.convert(path=str(path_mtn))
+        return ref, qte, mtn
+
+    def save_to_service(self, product):
+
+        ref, qte, mtn = self.convert_data(product)
+        path_qte = output / f'{ref}.qte.png'
+        prod = {
+            "qte_stock": float(qte),
+            "value": float(mtn),
+            "reference": ref,
+            "designation": product[1],
+        }
+        ProductServiceAPI.save("products", prod, filenames={
+            'picture': str(path_qte)
+        })
+
     def perform_actions(self,  wait_time=20) -> None:
         """Perform Actions:
 
@@ -60,11 +90,8 @@ class DeliveryStatus(Window):
                 window.search(product)
                 # wait untill get data
                 time.sleep(wait_time)
-
-                ProcomIO.save(
-                    window, product[0], "qte", QTE_REGION, path=str(output))
-                ProcomIO.save(
-                    window, product[0], "mtn", MTN_REGION, path=str(output))
+                window.save_output(product)
+                window.save_to_service(product)
 
 
 # def checker(window: Window):

@@ -27,7 +27,7 @@ def has_number_or_dot(word: str) -> bool:
 
     accept : 100.50, problem with 14.140.50, todo review this
     """
-    if word is None:
+    if word is None or word == '':
         return False
 
     for char in word:

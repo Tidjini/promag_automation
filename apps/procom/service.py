@@ -3,7 +3,7 @@ import requests
 from requests.exceptions import RequestException
 from procom.helpers import formalize, raise_requests_exception
 
-API = os.environ.get("PROCOM_API", "https://procom-tracker.herokuapp.com/api")
+API = os.environ.get("PROCOM_APdI", "https://procom-tracker.herokuapp.com/api")
 
 # todo make sure to set function to correct url use regex clean // except http://
 
@@ -24,7 +24,7 @@ class ServiceAPI:
         except RequestException as e:
             print("POST Exception, due to:", e)
 
-        return False, response
+        return False, None
 
     @staticmethod
     def put(
@@ -45,7 +45,7 @@ class ServiceAPI:
         except Exception as e:
             print("PUT Exception, due to:", e)
 
-        return False, response
+        return False, None
 
     @staticmethod
     def save(
@@ -65,6 +65,7 @@ class ServiceAPI:
 
         url_path = f"{url}/{path}/"
 
+        # print(url_path)
         # try to put data
         saved, response = ServiceAPI.put(
             url=url_path, reference=reference, data=data, files=files, timeout=timeout
@@ -73,7 +74,8 @@ class ServiceAPI:
         if saved:
             return response
 
-        saved, response = ServiceAPI.post(url=url_path, data=data, timeout=timeout)
+        saved, response = ServiceAPI.post(
+            url=url_path, data=data, timeout=timeout)
         if saved:
             if files:
                 # if saved send files with data (issue with request post with files)
@@ -103,10 +105,10 @@ class ProductServiceAPI:
         return reference, product
 
     @staticmethod
-    def prepare_file(filename: str, path: str = "output"):
+    def prepare_file(filename: str):
         """Get file with binary read by filename"""
         try:
-            return open(f"{path}/{filename}", "rb")
+            return open(f"{filename}", "rb")
         except FileNotFoundError as e:
             print("Prepare File Exception, due to:", e)
             return None
@@ -117,8 +119,8 @@ class ProductServiceAPI:
         result = {}
         if not files:
             return None
-        for attribute, filename in files.items():
-            file = ProductServiceAPI.prepare_file(filename, path)
+        for attribute, file_path in files.items():
+            file = ProductServiceAPI.prepare_file(file_path)
             if file is None:
                 continue
             result[attribute] = file
@@ -135,7 +137,9 @@ class ProductServiceAPI:
             # get formated data
             reference, product = ProductServiceAPI.format(instance)
             # set files
-            files = ProductServiceAPI.prepare_files(filenames)
+            files = None
+            if filenames:
+                files = ProductServiceAPI.prepare_files(filenames)
             # save data, files to remote service
             ServiceAPI.save(
                 url=API, path=path, reference=reference, data=product, files=files

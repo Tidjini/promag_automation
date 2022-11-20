@@ -10,7 +10,6 @@ from procom.delivery_status import DeliveryStatus
 from procom.procom_io import ProcomIO
 from procom.procom_image_converter import ProcomImageConverter
 from procom.constants import *
-from service import ProductServiceAPI
 
 # folders
 root = Path(__file__).parent.parent
@@ -95,9 +94,9 @@ if __name__ == "__main__":
     delivery_window = DeliveryStatus(check_asset=str(delivery), assume_location=delivery_location, check_active_asset=str(
         delivery_active), menu=str(menu_status), sub_menu=str(menu_delivery), close_asset=str(close))
 
-    checker = Thread(target=checking, args=(
-        main_window, delivery_window), daemon=True)
-    checker.start()
+    # checker = Thread(target=checking, args=(
+    #     main_window, delivery_window), daemon=True)
+    # checker.start()
 
     actions(main_window, delivery_window)
 
