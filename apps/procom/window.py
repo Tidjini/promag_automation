@@ -47,12 +47,12 @@ class Window(ABC):
         pyautogui.doubleClick(*location)
         pyautogui.write(text)
 
-    def checking(self) -> None:
+    def checking(self, asset) -> None:
         """checking if window is running"""
 
         try:
             # if the asset is in same location with our location, then window is running
-            x, y = pyautogui.locateCenterOnScreen(self.check_asset)
+            x, y = pyautogui.locateCenterOnScreen(asset)
             win_x, win_y = self.assume_location
             self.is_running = x == win_x and y == win_y
 
@@ -66,8 +66,9 @@ class Window(ABC):
         so this helps to check both active/non active asset
         """
         self.checking(self.check_asset)
-        if self.is_running:
+        if self.is_running or not 'check_active_asset' in self.__dict__:
             return
+
         self.checking(self.check_active_asset)
 
     def navigate_to(self, asset) -> Any:
@@ -127,7 +128,8 @@ class MainWindow(Window):
         super().__init__(check_asset=check_asset, assume_location=assume_location)
 
     def perform_actions(self, *args, **kwargs) -> None:
-        print(f"{self.name} perform actions")
+        if not self.is_running:
+            print('{}: GO OPEN THE SOFTWARE'.format(self.name))
 
     @property
     def name(self) -> str:

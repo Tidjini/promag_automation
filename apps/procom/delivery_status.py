@@ -1,5 +1,4 @@
 import time
-from _typeshed import Self
 
 from .window import Window
 
@@ -14,6 +13,12 @@ class DeliveryStatus(Window):
         - set reference
         - press the search button
     """
+
+    _name = "Delivery status"
+
+    @property
+    def name(self):
+        return self._name
 
     def perform_actions(self, start_date, end_date, reference, wait_time=20) -> None:
         """Perform Actions:
