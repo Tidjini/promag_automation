@@ -1,6 +1,17 @@
 import time
+from pathlib import Path
+from datetime import datetime
 
+# application
 from .window import Window
+from .procom_io import ProcomIO
+from .constants import *
+
+
+assets = Path(__file__).parent.parent.parent / 'assets'
+output = Path(__file__).parent.parent.parent / 'output'
+search = assets / 'search.png'
+now = datetime.now()
 
 
 class DeliveryStatus(Window):
@@ -20,29 +31,40 @@ class DeliveryStatus(Window):
     def name(self):
         return self._name
 
-    def perform_actions(self, start_date, end_date, reference, wait_time=20) -> None:
+    def search(self, product):
+        today = '{:%d%m%Y}'.format(now)
+        self.write(DATE_DEBUT_POSITION,  DATE_DEBUT)
+        self.write(DATE_FIN_POSITION,  today)
+        self.write(REFERENCE_POSITION, product[0])
+        try:
+            self.click_asset(str(search))
+        except:
+            pass
+
+    def perform_actions(self,  wait_time=20) -> None:
         """Perform Actions:
 
         Search with: Enter start date, end date with product ref, and press on search
         with sleep to wait for results (software performance 20s default)
         """
 
-        # if this window is not running go out
-        if not self.is_running:
-            return
+        with self as window:
+            # wait 3sec to open
+            time.sleep(3)
+            for product in PRODUCTS:
+                self.double_check()
 
-        self.write(start_date)
-        self.write(end_date)
-        self.write(reference)
+                # if this window is not running go out
+                if not window.is_running:
+                    continue
+                window.search(product)
+                # wait untill get data
+                time.sleep(wait_time)
 
-        try:
-            x, y = self.click_asset(self.search)
-        except TypeError:
-            # todo think about make self.is_running = False in here
-            return
-
-        # wait untill get data
-        time.sleep(wait_time)
+                ProcomIO.save(
+                    window, product[0], "qte", QTE_REGION, path=str(output))
+                ProcomIO.save(
+                    window, product[0], "mtn", MTN_REGION, path=str(output))
 
 
 # def checker(window: Window):

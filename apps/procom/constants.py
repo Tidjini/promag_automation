@@ -1,4 +1,4 @@
-x_etat_livraison, y_etat_livraison = 118, 46
+delivery_location = 118, 46
 x_journal_encaissement, y_journal_encaissement = 93, 48
 x_logo, y_logo = 11, 11
 # track some spesific product reference

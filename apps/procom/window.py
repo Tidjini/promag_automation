@@ -66,10 +66,10 @@ class Window(ABC):
         so this helps to check both active/non active asset
         """
         self.checking(self.check_asset)
-        if self.is_running or not 'check_active_asset' in self.__dict__:
+        if self.is_running:
             return
-
-        self.checking(self.check_active_asset)
+        if 'check_active_asset' in self.__dict__:
+            self.checking(self.check_active_asset)
 
     def navigate_to(self, asset) -> Any:
         """navigate to a given asset"""
@@ -99,7 +99,6 @@ class Window(ABC):
             time.sleep(1)
             # after opening the menu click on sub_menu button
             self.click_asset(self.sub_menu)
-            time.sleep(2)
             # make state of this window as running
             self.is_running = True
         except TypeError as e:
@@ -107,17 +106,18 @@ class Window(ABC):
 
         return self
 
-    def __exit__(self) -> None:
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
         """when we run out of 'with' bloc close this window"""
 
-        if not self.is_running:
-            return
+        # if not self.is_running:
+        #     return
 
         # make is_running False whatever the result of closing
         self.is_running = False
         try:
             self.click_asset(self.close_asset)
-        except TypeError:
+        except Exception as e:
+            print('Exit Exception', e)
             pass
 
 

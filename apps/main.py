@@ -28,6 +28,10 @@ search = assets / 'search.png'
 delivery = headers / 'delivery_status.png'
 delivery_active = headers / 'delivery_status_active.png'
 
+# menu
+menu_status = menu / 'status.png'
+menu_delivery = menu / 'delivery_status.png'
+
 
 def checking(*windows):
 
@@ -51,8 +55,7 @@ def checking(*windows):
 def actions(*windows):
     while True:
         for window in windows:
-            print('{} {} >> actions'.format(window.name,
-                  'is running' if window.is_running else 'is not running'))
+            window.perform_actions()
 
         # window.perform_actions() if window.is_running else print(
         #     f"{window.name} is not running, go next iteration"
@@ -86,16 +89,16 @@ def actions(*windows):
 
 if __name__ == "__main__":
     logo_location = x_logo, y_logo
-    delivery_location = x_etat_livraison, y_etat_livraison
     main_window = MainWindow(check_asset=str(
         logo), assume_location=logo_location)
 
     delivery_window = DeliveryStatus(check_asset=str(delivery), assume_location=delivery_location, check_active_asset=str(
-        delivery_active))
+        delivery_active), menu=str(menu_status), sub_menu=str(menu_delivery), close_asset=str(close))
 
     checker = Thread(target=checking, args=(
         main_window, delivery_window), daemon=True)
     checker.start()
+
     actions(main_window, delivery_window)
 
 
