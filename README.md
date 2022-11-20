@@ -18,3 +18,13 @@
 
 
 - get active images 
+- set sequence of the program
+  - check main window running
+  - if executing delivery:
+      - check delivery window
+      - get information
+      - close delivery window
+  - if executing encaissement ... same thing
+
+  - wait for while and repeat tasks
+- test program
