@@ -1,8 +1,13 @@
+from pathlib import Path
+# third-party
 import pyautogui
 
 # application
 from .window import Window
 from .helpers import formalize
+
+
+output = Path(__file__).parent.parent.parent / 'assets'
 
 
 class ProcomIO:
@@ -33,7 +38,9 @@ class ProcomIO:
         try:
             img = pyautogui.screenshot(region=region)
             ref = formalize(reference)
-            img.save("{}/{}.{}.png".format(path, ref, field))
+            #print("{}\{}.{}.png".format(path, ref, field))
+            filename = "{}\{}.{}.png".format(output, ref, field)
+            img.save(filename)
         except Exception as ex:
             print("Procomi IO exception, due to", ex)
 
@@ -57,6 +64,6 @@ class ProcomIO:
         print("Perform Saving")
         try:
             img = pyautogui.screenshot(region=region)
-            img.save("{}/{}.png".format(path, name))
+            img.save("{}\\{}.png".format(output, name))
         except Exception as ex:
             print("Procomi IO exception, due to", ex)

@@ -13,7 +13,7 @@ from .constants import *
 
 
 assets = Path(__file__).parent.parent.parent / 'assets'
-output = Path(__file__).parent.parent.parent / 'output'
+output = Path(__file__).parent.parent.parent / 'assets'
 search = assets / 'search.png'
 now = datetime.now()
 

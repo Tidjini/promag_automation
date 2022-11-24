@@ -32,34 +32,46 @@
 # img.save('{}/collection_journal_actdve.png'.format(headers))
 
 
-import socketio
-import time
+# import socketio
+# import time
 
-sio = socketio.Client()
+# sio = socketio.Client()
 
-messages = [f"message {i}" for i in range(1, 10)]
-
-
-@sio.event
-def connect():
-    print('connection established')
-    for message in messages:
-        sio.emit('message', {'message': message})
-        print(f'{message} sended with success')
-        messages.pop(0)
-        time.sleep(3)
+# messages = [f"message {i}" for i in range(1, 10)]
 
 
-@sio.event
-def my_message(data):
-    print('message received with ', data)
-    sio.emit('my response', {'response': 'my response'})
+# @sio.event
+# def connect():
+#     print('connection established')
+#     for message in messages:
+#         sio.emit('message', {'message': message})
+#         print(f'{message} sended with success')
+#         messages.pop(0)
+#         time.sleep(3)
 
 
-@sio.event
-def disconnect():
-    print('disconnected from server, rest messages', len(messages))
+# @sio.event
+# def my_message(data):
+#     print('message received with ', data)
+#     sio.emit('my response', {'response': 'my response'})
 
 
-sio.connect('https://eassalnotif.herokuapp.com/notify/')
-sio.wait()
+# @sio.event
+# def disconnect():
+#     print('disconnected from server, rest messages', len(messages))
+
+
+# sio.connect('https://eassalnotif.herokuapp.com/notify/')
+# sio.wait()
+
+import pyautogui
+from pathlib import Path
+
+output = Path(__file__).parent.parent / 'output'
+
+img = pyautogui.screenshot(region=(15, 20, 100, 100))
+file = "{}\{}.{}.png".format(output, 'o', 'q')
+img.save(file)
+
+# with open('C:\\Projects\\python\\autosaver\\output\\temp.qte.png'.replace('\\', '/')) as file:
+#     print('File ', file)
