@@ -30,4 +30,4 @@
 - test program
 
 - REVIEW this https://github.com/mokira3d48/python-socket.io-django.git
-- TEST
+- TEST / Change user
