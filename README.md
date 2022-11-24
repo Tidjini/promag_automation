@@ -28,3 +28,5 @@
 
   - wait for while and repeat tasks
 - test program
+
+- REVIEW this https://github.com/mokira3d48/python-socket.io-django.git
