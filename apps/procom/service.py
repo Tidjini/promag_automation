@@ -19,6 +19,7 @@ class ServiceAPI:
         """
         try:
             response = requests.post(url, data=data, timeout=timeout)
+            print(response.json())
             if response.status_code == 201:
                 return True, response
         except RequestException as e:
@@ -65,7 +66,7 @@ class ServiceAPI:
 
         url_path = f"{url}/{path}/"
 
-        # print(url_path)
+        print(url_path)
         # try to put data
         saved, response = ServiceAPI.put(
             url=url_path, reference=reference, data=data, files=files, timeout=timeout
@@ -143,6 +144,28 @@ class ProductServiceAPI:
             # save data, files to remote service
             ServiceAPI.save(
                 url=API, path=path, reference=reference, data=product, files=files
+            )
+        except Exception as e:
+            print("<ProductServiceApi.Save>, Exception due to:", e)
+
+
+class EncassiementServiceAPI:
+    """Specific APi for product"""
+
+    @staticmethod
+    def save(path: str, instance: dict, filenames: dict = None) -> None:
+        """Specific save methd for product instance"""
+
+        if not API:
+            raise Exception("Specify your API Url in your Environment")
+        try:
+            # get formated data
+            # set files
+            ref = instance['reference']
+
+            # save data, files to remote service
+            ServiceAPI.save(
+                url=API, path=path, reference=ref, data=instance
             )
         except Exception as e:
             print("<ProductServiceApi.Save>, Exception due to:", e)

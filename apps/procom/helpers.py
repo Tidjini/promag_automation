@@ -18,8 +18,10 @@ def unformalize(ref):
 def raise_requests_exception(response):
 
     error_message = "Save Exception, something went wrong in your remote server"
-    print(error_message, f"caused by: {response.json()}")
-    raise Exception(error_message, f"caused by: {response.json()}")
+    print(error_message,
+          f"caused by: {response.json() if response else 'NONE'}")
+    raise Exception(
+        error_message, f"caused by: {response.json() if response else 'NONE'}")
 
 
 def has_number_or_dot(word: str) -> bool:

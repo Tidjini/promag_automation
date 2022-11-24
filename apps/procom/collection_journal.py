@@ -1,12 +1,12 @@
 import time
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # application
 from .window import Window
 from .procom_io import ProcomIO
 from .procom_image_converter import ProcomImageConverter
-from .service import ProductServiceAPI
+from .service import EncassiementServiceAPI
 
 from .helpers import formalize
 from .constants import *
@@ -19,14 +19,14 @@ now = datetime.now()
 
 
 class CollectionJournal(Window):
-    """Delivery Status Window
+    """Collection Journal Daily
 
     perform actions:
         - like open window
         - set start date
         - set end date
-        - set reference
         - press the search button
+        - close
     """
 
     _name = "Delivery status"
@@ -35,41 +35,54 @@ class CollectionJournal(Window):
     def name(self):
         return self._name
 
-    def search(self, product):
-        today = '{:%d%m%Y}'.format(now)
-        self.write(DATE_DEBUT_POSITION,  DATE_DEBUT)
-        self.write(DATE_FIN_POSITION,  today)
-        self.write(REFERENCE_POSITION, product[0])
+    def search(self, period):
+        end = f'{now:%d%m%Y}'
+        start = now
+        match period:
+            case 'day':
+                start = now
+            case 'week':
+                start = now.today() - timedelta(days=7)
+            case 'month':
+                start = now.today().replace(day=1)
+
+        start = f'{start:%d%m%Y}'
+
+        self.write(COLLECTION_START_DATE_LOCATION,  start)
+        self.write(COLLECTION_END_DATE_LOCATION,  end)
         try:
             self.click_asset(str(search))
-        except:
+        except Exception as e:
+            print('Exception ', e)
             pass
 
-    def save_output(self, product):
-        ProcomIO.save(self, product[0], "qte", QTE_REGION, path=str(output))
-        ProcomIO.save(self, product[0], "mtn", MTN_REGION, path=str(output))
+    def save_output(self, period):
+        filename = f'collection_{period}'
 
-    def convert_data(self, product):
-        ref = formalize(product[0])
-        path_qte = output / f'{ref}.qte.png'
-        path_mtn = output / f'{ref}.mtn.png'
-        qte, _ = ProcomImageConverter.convert(path=str(path_qte))
-        mtn, _ = ProcomImageConverter.convert(path=str(path_mtn))
-        return ref, qte, mtn
+        ProcomIO.save_simple(
+            self, filename, ENCAISSEMNT_REGION, path=str(output))
 
-    def save_to_service(self, product):
+    def convert_data(self, period):
+        period_path = output / f'{period}.png'
+        mtn, _ = ProcomImageConverter.convert(path=str(period_path))
+        return mtn
 
-        ref, qte, mtn = self.convert_data(product)
-        path_qte = output / f'{ref}.qte.png'
-        prod = {
-            "qte_stock": float(qte),
+    def save_to_service(self, period):
+        filename = f'collection_{period}'
+        mtn = self.convert_data(filename)
+        print('mtn', mtn)
+        if mtn[0] == '.':
+            mtn = mtn[1:]
+
+        # period_path = output / f'{period}.png'
+        enc = {
+            "reference": period,
+            "label": period,
+            "date_range": period,
             "value": float(mtn),
-            "reference": ref,
-            "designation": product[1],
+            "previous_value": 0.0
         }
-        ProductServiceAPI.save("products", prod, filenames={
-            'picture': str(path_qte)
-        })
+        EncassiementServiceAPI.save("encaissements", enc)
 
     def perform_actions(self,  wait_time=20) -> None:
         """Perform Actions:
@@ -81,26 +94,15 @@ class CollectionJournal(Window):
         with self as window:
             # wait 3sec to open
             time.sleep(3)
-            for product in PRODUCTS:
+            for period in 'day', 'week', 'month':
                 self.double_check()
 
                 # if this window is not running go out
                 if not window.is_running:
                     continue
-                window.search(product)
+                window.search(period)
                 # wait untill get data
                 time.sleep(wait_time)
-                window.save_output(product)
-                window.save_to_service(product)
 
-
-# def checker(window: Window):
-#     """Run this in seprate thread"""
-#     window.checking()
-#     window.double_check()
-
-
-# def service(window: Window):
-#     for n in ["products..."]:
-#         with open(window) as win:
-#             win.perform_actions(...)
+                window.save_output(period)
+                window.save_to_service(period)

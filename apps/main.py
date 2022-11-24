@@ -7,6 +7,7 @@ from pathlib import Path
 #  application
 from procom.window import Window, MainWindow
 from procom.delivery_status import DeliveryStatus
+from procom.collection_journal import CollectionJournal
 from procom.procom_io import ProcomIO
 from procom.procom_image_converter import ProcomImageConverter
 from procom.constants import *
@@ -27,9 +28,14 @@ search = assets / 'search.png'
 delivery = headers / 'delivery_status.png'
 delivery_active = headers / 'delivery_status_active.png'
 
+# collection
+collection = headers / 'collection_journal.png'
+collection_active = headers / 'collection_journal_active.png'
+
 # menu
 menu_status = menu / 'status.png'
 menu_delivery = menu / 'delivery_status.png'
+menu_collection_journal = menu / 'collection_journal.png'
 
 
 def checking(*windows):
@@ -94,11 +100,14 @@ if __name__ == "__main__":
     delivery_window = DeliveryStatus(check_asset=str(delivery), assume_location=delivery_location, check_active_asset=str(
         delivery_active), menu=str(menu_status), sub_menu=str(menu_delivery), close_asset=str(close))
 
+    collection_window = CollectionJournal(check_asset=str(collection), assume_location=collection_location, check_active_asset=str(
+        collection_active), menu=str(menu_status), sub_menu=str(menu_collection_journal), close_asset=str(close))
+
     # checker = Thread(target=checking, args=(
     #     main_window, delivery_window), daemon=True)
     # checker.start()
 
-    actions(main_window, delivery_window)
+    actions(main_window, delivery_window, collection_window)
 
 
 # - check main window:
